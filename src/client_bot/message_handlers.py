@@ -208,11 +208,13 @@ async def create_post_step3(message: Message, state: FSMContext) -> None:
         await message.answer("Отправьте медиа (фото) для вашего обьявления", reply_markup=cancel_create_post_kb)
 
 
-@dp.message_handler(content_types=["photo"], state=PostCreate.post_media)
+@dp.message_handler(content_types=[ContentType.PHOTO, ContentType.TEXT], state=PostCreate.post_media)
 async def create_post_step4(message: Message, state: FSMContext) -> None:
     if message.text == cancel_operation:
         await state.finish()
         await message.answer("Вы отменили создание события", reply_markup=greetings_kb)
+    elif message.content_type == ContentType.TEXT:
+        await message.answer("Пожалуйста, отправьте фото для вашего объявления")
     else:
         photo_id = message.photo[-1].file_id
         async with state.proxy() as data:
