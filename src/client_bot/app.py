@@ -1,10 +1,10 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
-from src.config import CLIENT_BOT_TOKEN, storage
+from src.config import CLIENT_BOT_TOKEN, storage_client
 
 bot = Bot(token=CLIENT_BOT_TOKEN)
-dp = Dispatcher(bot, storage=storage)
+dp = Dispatcher(bot, storage=storage_client)
 
 
 async def run() -> None:

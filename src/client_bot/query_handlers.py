@@ -11,6 +11,7 @@ from .app import bot, dp
 from .markups import greetings_kb
 
 
+@dp.callback_query_handler(lambda c: c.data[:8] == "see_more", state=ChatMode.chat_mode)
 @dp.callback_query_handler(lambda c: c.data[:8] == "see_more")
 async def handle_see_more(callback_query: CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query.id)
@@ -41,6 +42,7 @@ async def handle_see_more(callback_query: CallbackQuery) -> None:
         await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
 
 
+@dp.callback_query_handler(lambda c: c.data[:7] == "connect", state=ChatMode.chat_mode)
 @dp.callback_query_handler(lambda c: c.data[:7] == "connect")
 async def process_enter_chat(callback_query: CallbackQuery, state: FSMContext) -> None:
     await ChatMode.chat_mode.set()
@@ -80,6 +82,7 @@ async def process_chat_check_event(callback_query: CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query.id)
 
 
+@dp.callback_query_handler(lambda c: c.data[:6] == "delete", state=ChatMode.chat_mode)
 @dp.callback_query_handler(lambda c: c.data[:6] == "delete")
 async def process_callback_delete(callback_query: CallbackQuery) -> None:
     await bot.send_message(
@@ -93,6 +96,7 @@ async def process_callback_delete(callback_query: CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query.id)
 
 
+@dp.callback_query_handler(lambda c: c.data[:14] == "confirm_delete", state=ChatMode.chat_mode)
 @dp.callback_query_handler(lambda c: c.data[:14] == "confirm_delete")
 async def process_callback_cm_delete(callback_query: CallbackQuery) -> None:
     event_id = re.match(r"^confirm_delete_(\d+)$", callback_query.data).group(1)
@@ -102,6 +106,7 @@ async def process_callback_cm_delete(callback_query: CallbackQuery) -> None:
     await bot.answer_callback_query(callback_query.id)
 
 
+@dp.callback_query_handler(lambda c: c.data[:13] == "cancel_delete", state=ChatMode.chat_mode)
 @dp.callback_query_handler(lambda c: c.data[:13] == "cancel_delete")
 async def process_callback_cl_delete(callback_query: CallbackQuery) -> None:
     await bot.send_message(

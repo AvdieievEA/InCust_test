@@ -8,7 +8,8 @@ DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 
-storage = MemoryStorage()
+storage_client = MemoryStorage()
+storage_service = MemoryStorage()
 
 CLIENT_BOT_TOKEN = os.getenv("CLIENT_BOT_TOKEN")
 

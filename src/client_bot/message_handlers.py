@@ -14,9 +14,20 @@ from .markups import add_event, cancel_create_post_kb, cancel_operation, catalog
 
 @dp.message_handler(commands=["start"])
 async def handle_greeting(message: Message) -> None:
-    await message.answer(
-        f"Добро пожаловать, {message.from_user.first_name} {message.from_user.last_name}!", reply_markup=greetings_kb
-    )
+    if len(message.text) > 7:
+        post_id = message.text[11:]
+        post = db.query(Event).filter(Event.id == post_id).first()
+        await bot.send_photo(
+            message.from_user.id,
+            post.photo_id,
+            caption=f'{post.name}' f'\n{post.title}' f'\n{post.description}',
+            reply_markup=greetings_kb,
+        )
+    else:
+        await message.answer(
+            f"Добро пожаловать, {message.from_user.first_name} {message.from_user.last_name}!",
+            reply_markup=greetings_kb
+        )
 
 
 @dp.message_handler(regexp=rf"^{add_event}$")
@@ -72,7 +83,7 @@ async def post_chat_mode(message: Message, state: FSMContext) -> None:
     # TODO Ссылка на пост в маркапе
     button_check_event = InlineKeyboardButton(
         f"Посмотреть событие {data['event_name']}",
-        url=f'https://t.me/InCst_test_bot/{data["msg_id"]}',
+        url=f'https://t.me/InCst_test_bot?start=test{data["event_id"]}',
         callback_data=f"chat_check_event_{data['event_id']}",
     )
     markup_connect_chat = InlineKeyboardMarkup().add(button_connect_chat, button_check_event)
@@ -98,6 +109,13 @@ async def post_chat_mode(message: Message, state: FSMContext) -> None:
                 event.photo_id,
                 caption=f"{event.name}\n\n{event.title}\n{event.description}",
             )
+        elif message.text[:6] == "/start":
+            await state.finish()
+
+            db.merge(User(id=message.from_user.id, show_reply_markup=True))
+            db.commit()
+
+            await handle_greeting(message=message)
         else:
             await service_bot.send_message(
                 data["author_id"],

@@ -9,6 +9,7 @@ from ..states import ChatMode
 from .app import bot, dp
 
 
+@dp.callback_query_handler(lambda c: c.data[:12] == "connect_chat", state=ChatMode.chat_mode)
 @dp.callback_query_handler(lambda c: c.data[:12] == "connect_chat")
 async def process_enter_chat(callback_query: CallbackQuery, state: FSMContext) -> None:
     customer_id, event_id = re.match(r"^connect_chat\?c=(\d*)&e=(\d+)$", callback_query.data).groups()
@@ -33,7 +34,6 @@ async def process_enter_chat(callback_query: CallbackQuery, state: FSMContext) -
         f"Вы вошли в режим чата' {event.title}.",
         reply_markup=ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("❌Выйти из чата", callback_data=f"leave_chat"),
-            KeyboardButton("Посмотреть событие", callback_data=f"chat_check_event_{event_id}"),
         ),
     )
     await bot.answer_callback_query(callback_query.id)
